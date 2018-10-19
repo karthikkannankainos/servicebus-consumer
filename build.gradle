@@ -29,7 +29,9 @@ bootRun {
         args project.args.split(',')
     }*/
 
-    args=["--spring.profiles.active=azure", "--cmc.servicebus.connection.queue.name=cmc.claim.save.bulk.print"]
+    //args=["--spring.profiles.active=axzure,--cmc.servicebus.connection.queue.name=cmc.claim.save.bulk.print"]
+
+    systemProperty 'spring.profiles.active', System.properties['spring.profiles.active']
 }
 
 dependencies {

@@ -26,6 +26,6 @@ public class ServiceBusConfiguration {
     }
 
     public String getUrlString() throws UnsupportedEncodingException {
-        return String.format("amqp://%1s?amqp.idleTimeout=3600000", host);
+        return String.format("amqps://%1s?amqp.idleTimeout=3600000", host);
     }
 }

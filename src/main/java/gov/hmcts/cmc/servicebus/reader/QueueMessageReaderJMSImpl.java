@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Profile(value="!azure")
+@Profile(value="jms")
 public class QueueMessageReaderJMSImpl implements QueueMessageReader{
 
     @Autowired
@@ -25,14 +25,23 @@ public class QueueMessageReaderJMSImpl implements QueueMessageReader{
 
     private final static Gson GSON = new Gson();
 
-
-    @JmsListener(destination = "${cmc.servicebus.connection.queue.name}")
-    public void handleMessage(Message<String> claimMessage) throws InterruptedException, ServiceBusException {
+    @Transactional
+    @JmsListener(destination = "${cmc.servicebus.connection.queue.name}/$DeadLetterQueue", containerFactory = "queueListenerFactory")
+    public void handleMessage(Message<Claim> claimMessage) throws InterruptedException, ServiceBusException {
         MessageHeaders headers =  claimMessage.getHeaders();
         logger.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++");
         logger.debug("Claim : headers received : {}", headers);
-        logger.debug("Calim : Claim Id received : {}", claimMessage.getPayload());
+        logger.debug("Calim : Claim Id received : {}", claimMessage.getPayload().getId());
+        logger.debug("Calim : Claim details received : {}", claimMessage.getPayload().getClaim());
+        logger.debug("Calim : Claim Poison Message : {}", claimMessage.getPayload().getPoisonMessage());
         logger.debug("+++++++++++++++++++++++++++++++++++++++++++++++++++++");
+
+       /* if(!claimMessage.getPayload().getPoisonMessage().isEmpty() &&
+                claimMessage.getPayload().getPoisonMessage().equalsIgnoreCase("YES")){
+            throw new InterruptedException("$$$$$$ I am a Poison Message %%%%%%%%%%%%%%");
+        }*/
+
+
 
     }
 

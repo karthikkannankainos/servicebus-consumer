@@ -28,13 +28,13 @@ public class ApplicationStarter implements CommandLineRunner{
 
     @Override
     public void run(String... args) throws Exception {
-        logger.debug("The args received are {}",args);
+        /*logger.debug("The args received are {}",args);
         String queueName = args[0];
         if(args.length>1){
             queueName = queueName + "/$DeadLetterQueue";
         }
 
-        logger.debug("Message Listener is to be registered for the Queue",queueName);
+        logger.debug("Message Listener is to be registered for the Queue",queueName);*/
     }
 
 }

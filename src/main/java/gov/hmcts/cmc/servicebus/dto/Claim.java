@@ -3,8 +3,24 @@ package gov.hmcts.cmc.servicebus.dto;
 import java.io.Serializable;
 
 public class Claim implements Serializable {
+
     private int id;
     private String claim;
+    private String poisonMessage;
+
+    public Claim(int id, String claim, String poisonMessage) {
+        this.id = id;
+        this.claim = claim;
+        this.poisonMessage = poisonMessage;
+    }
+
+    public String getPoisonMessage() {
+        return poisonMessage;
+    }
+
+    public void setPoisonMessage(String poisonMessage) {
+        this.poisonMessage = poisonMessage;
+    }
 
     public Claim(){
 
@@ -16,11 +32,6 @@ public class Claim implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Claim(int id, String claim) {
-        this.id = id;
-        this.claim = claim;
     }
 
     public String getClaim() {

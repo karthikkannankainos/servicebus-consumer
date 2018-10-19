@@ -3,6 +3,7 @@ package gov.hmcts.cmc.servicebus.config;
 import org.apache.qpid.jms.JmsConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
@@ -31,16 +32,38 @@ public class MessagingConfig {
         jmsConnectionFactory.setUsername(details.getUsername());
         jmsConnectionFactory.setPassword(details.getPassword());
         jmsConnectionFactory.setClientID(clientId);
-        jmsConnectionFactory.setReceiveLocalOnly(true);
+        jmsConnectionFactory.setReceiveLocalOnly(false);
         return new CachingConnectionFactory(jmsConnectionFactory);
     }
+
+    @Bean
+    public JmsListenerContainerFactory<?> topicListenerFactory(ConnectionFactory connectionFactory,
+                                                               DefaultJmsListenerContainerFactoryConfigurer configurer) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setPubSubDomain(true);
+        // This provides all boot's default to this factory, including the message converter
+        configurer.configure(factory, connectionFactory);
+        // You could still override some of Boot's default if necessary.
+        return factory;
+    }
+
+    @Bean
+    public JmsListenerContainerFactory<?> queueListenerFactory(ConnectionFactory connectionFactory,
+                                                               DefaultJmsListenerContainerFactoryConfigurer configurer) {
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        //factory.setPubSubDomain(true);
+        // This provides all boot's default to this factory, including the message converter
+        configurer.configure(factory, connectionFactory);
+        return factory;
+    }
+
 
     @Bean
     public JmsTemplate jmsTemplate(ConnectionFactory jmsConnectionFactory) {
         JmsTemplate returnValue = new JmsTemplate();
         returnValue.setConnectionFactory(jmsConnectionFactory);
         returnValue.setMessageIdEnabled(true);
-        //returnValue.setSessionTransacted(true);
+        returnValue.setSessionTransacted(true);
         return returnValue;
     }
 
@@ -48,6 +71,7 @@ public class MessagingConfig {
     public JmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory){
         DefaultJmsListenerContainerFactory returnValue = new DefaultJmsListenerContainerFactory();
         //returnValue.setTransactionManager(transactionManager());
+
         returnValue.setConnectionFactory(connectionFactory);
         return returnValue;
     }
